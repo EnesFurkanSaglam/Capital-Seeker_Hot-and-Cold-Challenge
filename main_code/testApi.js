@@ -13,7 +13,7 @@ async function getCountryCapital(countryName) {
     }
 }
 
-const countryName = 'America'; 
+const countryName = 'Mayotte'; 
 getCountryCapital(countryName)
     .then(capital => {
         if (capital) {
