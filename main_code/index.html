@@ -1579,6 +1579,8 @@ path.allPaths:hover {
         
     </svg>
 
+    
+
     <div class="tooltip" id="tooltip"></div>
 
 
@@ -1594,7 +1596,7 @@ async function getCountryCapital(countryName) {
             throw new Error('Country not found');
         }
         const data = await response.json();
-        const capital = data[0]?.capital;
+        const capital = data[0]?.capital[0]; // assuming capital is an array, get the first element
         return capital;
     } catch (error) {
         console.error('Error fetching country data:', error);
@@ -1602,42 +1604,41 @@ async function getCountryCapital(countryName) {
     }
 }
 
-
-
 function getRandomCountry() {
-        const allPaths = document.querySelectorAll('path.allPaths'); 
-        const randomIndex = Math.floor(Math.random() * allPaths.length); 
-        const randomCountry = allPaths[randomIndex];
-        return randomCountry.id;
+    const allPaths = document.querySelectorAll('path.allPaths'); 
+    const randomIndex = Math.floor(Math.random() * allPaths.length); 
+    const randomCountry = allPaths[randomIndex];
+    return randomCountry.id;
 }
 
-var heart = 5;
+async function startGame() {
+    var heart = 5;
 
-const countries = document.querySelectorAll('.allPaths');
-const thisCountry = getRandomCountry();
+    const countries = document.querySelectorAll('.allPaths');
+    const thisCountry = getRandomCountry();
 
+    var thisCapital = await getCountryCapital(thisCountry);
+    window.alert(thisCapital);
 
-var thisCapital = getCountryCapital(thisCountry);
-window.alert(thisCapital);
+    countries.forEach(country => {
+        country.addEventListener('click', function() {
+            if (country.id === thisCountry) {
+                window.alert("Congratulations, you guessed the country correctly");
+            } else {
+                heart--;
+                if (heart === 0) {
+                    window.alert("Game over Page Will Refresh");
+                    location.reload();  
 
-countries.forEach(country => {
-
-    country.addEventListener('click', function(){
-
-        if(country == thisCountry){
-            window.alert("Congratulations, you guessed the country correctly");
-        }
-        else{
-            heart--;
-            if(heart == 0){
-                window.alert("Game over");
+                }
             }
+        });
 
-        }
 
-    })
-});
+    });
+}
 
+startGame();
 
 
 
