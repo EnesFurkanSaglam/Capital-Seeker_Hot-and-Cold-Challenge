@@ -1621,6 +1621,9 @@ path.allPaths:hover {
 
 let heart = 5;
 let thisCountry = '';
+let country = [];
+
+
 
 async function getCountryCapital(countryName) {
     try {
@@ -1629,7 +1632,7 @@ async function getCountryCapital(countryName) {
             throw new Error('Country not found');
         }
         const data = await response.json();
-        const capital = data[0]?.capital[0]; // assuming capital is an array, get the first element
+        const capital = data[0]?.capital[0];
         return capital;
     } catch (error) {
         console.error('Error fetching country data:', error);
@@ -1638,26 +1641,27 @@ async function getCountryCapital(countryName) {
 }
 
 function getRandomCountry() {
-    const allPaths = document.querySelectorAll('path.allPaths'); 
-    const randomIndex = Math.floor(Math.random() * allPaths.length); 
+    const allPaths = document.querySelectorAll('path.allPaths');
+    const randomIndex = Math.floor(Math.random() * allPaths.length);
     const randomCountry = allPaths[randomIndex];
     return randomCountry.id;
 }
 
-// function showTooltip(event) {
-//     const countryName = event.target.getAttribute('id');
-//     const tooltip = document.getElementById('tooltip');
-//     tooltip.style.display = 'block';
-//     tooltip.textContent = `${countryName} `;
+function showTooltip(event) {
+    const countryName = event.target.getAttribute('id');
+    const tooltip = document.getElementById('tooltip');
+    tooltip.style.display = 'block';
+    tooltip.textContent = `${countryName}`;
 
-//     tooltip.style.top = `${event.clientY}px`;
-//     tooltip.style.left = `${event.clientX}px`;
-// }
+    const offset = 10; 
+    tooltip.style.top = `${event.clientY + offset}px`;
+    tooltip.style.left = `${event.clientX + offset}px`;
+}
 
-// function hideTooltip() {
-//     const tooltip = document.getElementById('tooltip');
-//     tooltip.style.display = 'none';
-// }
+function hideTooltip() {
+    const tooltip = document.getElementById('tooltip');
+    tooltip.style.display = 'none';
+}
 
 async function startGame() {
     thisCountry = getRandomCountry();
@@ -1666,21 +1670,23 @@ async function startGame() {
 
     const countries = document.querySelectorAll('.allPaths');
     countries.forEach(country => {
+        country.addEventListener('mouseover', showTooltip);
+        country.addEventListener('mousemove', showTooltip); 
+        country.addEventListener('mouseout', hideTooltip);
+
         country.addEventListener('click', function() {
             if (country.id === thisCountry) {
                 window.alert("Congratulations, you guessed the country correctly");
             } else {
                 heart--;
                 updateHeartValue();
+                
                 if (heart === 0) {
-                    window.alert("Game over. Page will refresh");
-                    location.reload();  
+                    window.alert(`Game over. Page will refresh. The city was ${thisCountry}`);
+                    location.reload();
                 }
             }
         });
-
-        //  country.addEventListener('mouseover', showTooltip);
-        //  country.addEventListener('mouseout', hideTooltip);
     });
 }
 
