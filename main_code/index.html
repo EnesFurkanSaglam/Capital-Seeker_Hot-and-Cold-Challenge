@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>GuessTheCapital</title>
 
     <script src="https://kit.fontawesome.com/37d6505749.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -63,6 +63,34 @@ path.allPaths:hover {
     margin-top: 2px;
     font-size: 10px;
 }
+
+
+
+
+.first-color {
+  fill: #8B0000;
+}
+
+
+.second-color {
+  fill: #ffe600;
+}
+
+
+.third-color {
+  fill: #15ff00;
+}
+
+
+.forth-color {
+  fill: #0004f7;
+}
+
+.default-color {
+    fill: #cccccc;
+}
+
+
 
 
 </style>
@@ -1623,15 +1651,10 @@ path.allPaths:hover {
 
 const apiKey = 'd1a639113d374b9d947b46e0b14d1d95';
 
-
 let heart = 5;
 let thisCountry = '';
 
-
-const countriesMap = new Map();
-
-
-
+var countriesMap = new Map();
 
 async function getCountryCapital(countryName) {
     try {
@@ -1661,7 +1684,7 @@ function showTooltip(event) {
     tooltip.style.display = 'block';
     tooltip.textContent = `${countryName}`;
 
-    const offset = 10; 
+    const offset = 10;
     tooltip.style.top = `${event.clientY + offset}px`;
     tooltip.style.left = `${event.clientX + offset}px`;
 }
@@ -1677,16 +1700,16 @@ function updateHeartValue() {
 
 async function startGame() {
     thisCountry = getRandomCountry();
-    const thisCapital = await getCountryCapital(thisCountry);
+    var thisCapital = await getCountryCapital(thisCountry);
     window.alert(thisCapital);
 
-    const countries = document.querySelectorAll('.allPaths');
+    var countries = document.querySelectorAll('.allPaths');
     countries.forEach(country => {
         country.addEventListener('mouseover', showTooltip);
-        country.addEventListener('mousemove', showTooltip); 
+        country.addEventListener('mousemove', showTooltip);
         country.addEventListener('mouseout', hideTooltip);
 
-        country.addEventListener('click', function() {
+        country.addEventListener('click', async function() {
             if (country.id === thisCountry) {
                 window.alert("Congratulations, you guessed the country correctly");
             } else {
@@ -1695,23 +1718,55 @@ async function startGame() {
 
                 if (heart === 0) {
                     window.alert(`Game over. Page will refresh. The city was ${thisCountry}`);
+                    location.reload();
+                } else {
+                    await mappingByDistance(country.id);
+                    var sortedCountriesMap = sortMapByValue(countriesMap);
 
-                    countriesMap.forEach((value, key) => {
-                    console.log(`${key}: ${value}`);
-                    });
+                    let size = sortedCountriesMap.size;
 
-                    //location.reload();
-                }
-                else{
-                    mappingByDistance(country.id);
+                    if (size > 1) {
+                        document.querySelectorAll(".allPaths").forEach(e => {
+                            let keysArray = Array.from(sortedCountriesMap.keys());
+
+                            
+
+                            for (let i = 0; i < keysArray.length; i++) {
+
+                                console.log(keysArray[i]);
+                                if (i === 0) {
+                                    if (e.id === keysArray[i]) {
+
+                                        //e.setAttribute('class', `first-color ${e.id}`);      problem
+                                        e.id.classList.add("first-color");
+                                    }
+                                }
+                                if (i === 1) {
+                                    if (e.id === keysArray[i]) {
+                                        
+                                        e.setAttribute('class', `second-color ${e.id}`);
+                                    }
+                                }
+                                if (i === 2) {
+                                    if (e.id === keysArray[i]) {
+                                        
+                                        e.setAttribute('class', `third-color ${e.id}`);
+                                    }
+                                }
+                                if (i === 3) {
+                                    if (e.id === keysArray[i]) {
+                                        
+                                        e.setAttribute('class', `forth-color ${e.id}`);
+                                    }
+                                }
+                            }
+                        });
+                    }
                 }
             }
         });
     });
 }
-
-
-
 
 const getCoordinates = async (location) => {
     try {
@@ -1722,23 +1777,20 @@ const getCoordinates = async (location) => {
         console.error(`Error fetching coordinates for ${location}:`, error);
         return null;
     }
-        };
+};
 
 const calculateDistance = (coord1, coord2) => {
     const R = 6371;
     const dLat = (coord2.lat - coord1.lat) * Math.PI / 180;
     const dLng = (coord2.lng - coord1.lng) * Math.PI / 180;
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-
-    Math.cos(coord1.lat * Math.PI / 180) * Math.cos(coord2.lat * Math.PI / 180) *
-    Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        Math.cos(coord1.lat * Math.PI / 180) * Math.cos(coord2.lat * Math.PI / 180) *
+        Math.sin(dLng / 2) * Math.sin(dLng / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c; 
+    const distance = R * c;
     return distance;
-
 };
-
 
 const getDistanceBetweenCountries = async (country1, country2) => {
     const coords1 = await getCoordinates(country1);
@@ -1747,27 +1799,23 @@ const getDistanceBetweenCountries = async (country1, country2) => {
     if (coords1 && coords2) {
         const distance = calculateDistance(coords1, coords2);
         return distance;
+    } else {
+        console.error('Could not calculate distance.');
+        return null;
     }
-        else {
-            console.error('Could not calculate distance.');
-            return null;
-        }
-
 };
 
 async function mappingByDistance(mappingCountry) {
-    let distance = await getDistanceBetweenCountries(mappingCountry,thisCountry);
-    countriesMap.set(mappingCountry,distance)
-    
+    let distance = await getDistanceBetweenCountries(mappingCountry, thisCountry);
+    countriesMap.set(mappingCountry, distance);
 }
 
-
-
+function sortMapByValue(map) {
+    const sortedEntries = Array.from(map.entries()).sort((a, b) => a[1] - b[1]);
+    return new Map(sortedEntries);
+}
 
 startGame();
-
-
-
 
 
 
