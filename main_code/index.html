@@ -73,23 +73,18 @@ path.allPaths:hover {
 
 
 .second-color {
-  fill: #ffe600;
+  fill: #f06767;
 }
 
 
 .third-color {
-  fill: #15ff00;
+  fill: #00fff2;
 }
 
 
 .forth-color {
-  fill: #0004f7;
+  fill: #0059ff;
 }
-
-.default-color {
-    fill: #cccccc;
-}
-
 
 
 
@@ -1710,6 +1705,15 @@ async function startGame() {
         country.addEventListener('mouseout', hideTooltip);
 
         country.addEventListener('click', async function() {
+
+
+            var paths = document.querySelectorAll('path');
+                paths.forEach(path => {
+                path.setAttribute('class', 'allPaths');
+            });
+
+
+            
             if (country.id === thisCountry) {
                 window.alert("Congratulations, you guessed the country correctly");
             } else {
@@ -1733,34 +1737,42 @@ async function startGame() {
 
                             for (let i = 0; i < keysArray.length; i++) {
 
-                                console.log(keysArray[i]);
+                                
+
                                 if (i === 0) {
                                     if (e.id === keysArray[i]) {
 
-                                        //e.setAttribute('class', `first-color ${e.id}`);      problem
-                                        e.id.classList.add("first-color");
+                                        e.setAttribute('class',`first-color`);
+                                        console.log(e.getAttribute("class"));
                                     }
                                 }
                                 if (i === 1) {
                                     if (e.id === keysArray[i]) {
+
+                                        e.setAttribute('class',`second-color`);
+
                                         
-                                        e.setAttribute('class', `second-color ${e.id}`);
                                     }
                                 }
                                 if (i === 2) {
                                     if (e.id === keysArray[i]) {
+
+                                        e.setAttribute('class',`third-color`);
+
                                         
-                                        e.setAttribute('class', `third-color ${e.id}`);
+                                        
                                     }
                                 }
                                 if (i === 3) {
                                     if (e.id === keysArray[i]) {
+
+                                        e.setAttribute('class',`forth-color`);
                                         
-                                        e.setAttribute('class', `forth-color ${e.id}`);
                                     }
                                 }
                             }
                         });
+
                     }
                 }
             }
